@@ -23,7 +23,7 @@
             Aplikasi demo integrasi otentikasi Single Sign-On (SSO) MualliminID berbasis stateless menggunakan Laravel 13 dan Livewire AJAX.
         </p>
 
-        <a href="{{ route('login') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 w-full block rounded-xl transition-all shadow-lg shadow-indigo-600/10 uppercase tracking-wider text-xs mb-2">
+        <a href="{{ route('sso.login') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 w-full block rounded-xl transition-all shadow-lg shadow-indigo-600/10 uppercase tracking-wider text-xs mb-2">
             Login MualliminID
         </a>
 

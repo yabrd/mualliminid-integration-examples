@@ -45,14 +45,14 @@ class SSOController extends Controller
         $error = $request->query('error');
 
         if ($error) {
-            return redirect('/login')->with('error', $request->query('error_description', 'Autentikasi gagal.'));
+            return redirect('/')->with('error', $request->query('error_description', 'Autentikasi gagal.'));
         }
 
         $savedState = Session::pull('sso_state');
         $codeVerifier = Session::pull('sso_code_verifier');
 
         if (!$state || $state !== $savedState) {
-            return redirect('/login')->with('error', 'State tidak cocok.');
+            return redirect('/')->with('error', 'State tidak cocok.');
         }
 
         $cookieHeader = $request->header('Cookie') ?? '';
@@ -69,7 +69,7 @@ class SSOController extends Controller
         ]);
 
         if (!$response->successful()) {
-            return redirect('/login')->with('error', 'Gagal menukar token.');
+            return redirect('/')->with('error', 'Gagal menukar token.');
         }
 
         $tokens = $response->json()['data'] ?? [];
@@ -77,15 +77,16 @@ class SSOController extends Controller
         $idToken = $tokens['id_token'] ?? null;
 
         if (!$accessToken) {
-            return redirect('/login')->with('error', 'Access token tidak ditemukan dalam respons SSO.');
+            return redirect('/')->with('error', 'Access token tidak ditemukan dalam respons SSO.');
         }
 
         $userInfoResponse = Http::withToken($accessToken)
             ->get(config('services.sso.api_url') . '/auth/sso/userinfo');
 
         if (!$userInfoResponse->successful()) {
-            return redirect('/login')->with('error', 'Gagal mengambil data user.');
+            return redirect('/')->with('error', 'Gagal mengambil data user.');
         }
+
 
         $ssoUser = $userInfoResponse->json()['data'];
 
