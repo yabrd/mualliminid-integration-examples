@@ -1,6 +1,6 @@
 # Backend — Example CSR Integrate MualliminID
 
-Laravel 13 sebagai **Stateless REST API** untuk menerima, memverifikasi, dan melayani data pengguna yang terautentikasi via SSO MualliminID.
+Laravel 13 sebagai **Stateless REST API** untuk menerima, memverifikasi, dan melayani data pengguna yang terautentikasi via Mu'allimin ID.
 
 > Backend ini **tidak memiliki halaman HTML**, **tidak menggunakan session PHP** untuk autentikasi, dan **tidak memerlukan cookie session**. Setiap request diautentikasi murni melalui **JWT Bearer Token** pada header `Authorization`.
 
@@ -8,13 +8,13 @@ Laravel 13 sebagai **Stateless REST API** untuk menerima, memverifikasi, dan mel
 
 ## Teknologi
 
-| Komponen | Detail |
-| :--- | :--- |
-| Framework | Laravel 13 |
-| PHP | >= 8.3 |
-| Database | SQLite (untuk contoh ini) |
+| Komponen    | Detail                                               |
+| :---------- | :--------------------------------------------------- |
+| Framework   | Laravel 13                                           |
+| PHP         | >= 8.3                                               |
+| Database    | SQLite (untuk contoh ini)                            |
 | Autentikasi | Custom Auth Guard via JWT (`openssl_verify` offline) |
-| HTTP Client | Laravel `Http` Facade (untuk komunikasi ke SSO API) |
+| HTTP Client | Laravel `Http` Facade (untuk komunikasi ke SSO API)  |
 
 ---
 
@@ -70,12 +70,12 @@ SSO_CLIENT_SECRET=secret_xxxxxxxxxxxxxxxx
 SSO_PUBLIC_KEY_PATH=keys/public.pem
 ```
 
-| Variabel | Keterangan | Digunakan di |
-| :--- | :--- | :--- |
-| `SSO_API_URL` | Base URL API server MualliminID SSO | Guard (userinfo), UserController (sync) |
-| `SSO_CLIENT_ID` | Client ID aplikasi yang terdaftar di SSO | UserController (sync — path parameter) |
-| `SSO_CLIENT_SECRET` | Secret untuk mengakses endpoint daftar pengguna SSO | UserController (sync — header `X-Client-Secret`) |
-| `SSO_PUBLIC_KEY_PATH` | Path ke `public.pem` relatif dari root project | Guard (verifikasi JWT signature secara offline) |
+| Variabel              | Keterangan                                          | Digunakan di                                     |
+| :-------------------- | :-------------------------------------------------- | :----------------------------------------------- |
+| `SSO_API_URL`         | Base URL API server MualliminID SSO                 | Guard (userinfo), UserController (sync)          |
+| `SSO_CLIENT_ID`       | Client ID aplikasi yang terdaftar di SSO            | UserController (sync — path parameter)           |
+| `SSO_CLIENT_SECRET`   | Secret untuk mengakses endpoint daftar pengguna SSO | UserController (sync — header `X-Client-Secret`) |
+| `SSO_PUBLIC_KEY_PATH` | Path ke `public.pem` relatif dari root project      | Guard (verifikasi JWT signature secara offline)  |
 
 ### 3. Setup Database & Kunci Publik
 
@@ -194,23 +194,23 @@ Backend menggunakan token yang **sama persis** yang dikirim oleh user ke backend
 
 ```json
 {
-  "status": "success",
-  "message": "User info berhasil didapatkan",
-  "data": {
-    "sub": "uuid-user-di-sso",
-    "userId": "uuid-user-di-sso",
-    "email": "ahmad.fauzi@muallimin.sch.id",
-    "email_verified": true,
-    "name": "Ahmad Fauzi",
-    "first_name": "Ahmad",
-    "last_name": "Fauzi",
-    "picture": "https://sso.muallimin.sch.id/uploads/profiles/foto.jpg",
-    "whatsapp_number": "081234567890",
-    "nbm": "20240001",
-    "role": "GURU",
-    "isDeveloper": false,
-    "status": "ACTIVE"
-  }
+    "status": "success",
+    "message": "User info berhasil didapatkan",
+    "data": {
+        "sub": "uuid-user-di-sso",
+        "userId": "uuid-user-di-sso",
+        "email": "ahmad.fauzi@muallimin.sch.id",
+        "email_verified": true,
+        "name": "Ahmad Fauzi",
+        "first_name": "Ahmad",
+        "last_name": "Fauzi",
+        "picture": "https://sso.muallimin.sch.id/uploads/profiles/foto.jpg",
+        "whatsapp_number": "081234567890",
+        "nbm": "20240001",
+        "role": "GURU",
+        "isDeveloper": false,
+        "status": "ACTIVE"
+    }
 }
 ```
 
@@ -269,27 +269,27 @@ Karena SSO membatasi 100 data per response, backend memanggil endpoint ini berul
 
 ```json
 {
-  "status": "success",
-  "message": "Daftar user aplikasi berhasil didapatkan",
-  "data": [
-    {
-      "userId": "uuid-user-1",
-      "email": "ahmad.fauzi@muallimin.sch.id",
-      "name": "Ahmad Fauzi",
-      "first_name": "Ahmad",
-      "last_name": "Fauzi",
-      "whatsapp_number": "081234567890",
-      "nbm": "20240001",
-      "role": "GURU",
-      "status": "ACTIVE"
+    "status": "success",
+    "message": "Daftar user aplikasi berhasil didapatkan",
+    "data": [
+        {
+            "userId": "uuid-user-1",
+            "email": "ahmad.fauzi@muallimin.sch.id",
+            "name": "Ahmad Fauzi",
+            "first_name": "Ahmad",
+            "last_name": "Fauzi",
+            "whatsapp_number": "081234567890",
+            "nbm": "20240001",
+            "role": "GURU",
+            "status": "ACTIVE"
+        }
+    ],
+    "meta": {
+        "total": 285,
+        "page": 1,
+        "limit": 100,
+        "totalPages": 3
     }
-  ],
-  "meta": {
-    "total": 285,
-    "page": 1,
-    "limit": 100,
-    "totalPages": 3
-  }
 }
 ```
 
@@ -360,28 +360,31 @@ Route::middleware(['auth'])->group(function () {
 Guard memproses token → mengisi `Auth::user()` → controller langsung return hasilnya, tanpa query tambahan.
 
 **Request:**
+
 ```http
 GET /api/auth/me
 Authorization: Bearer {access_token}
 ```
 
 **Response Sukses (200):**
+
 ```json
 {
-  "status": "success",
-  "data": {
-    "id": 1,
-    "sso_id": "uuid-user-di-sso",
-    "name": "Ahmad Fauzi",
-    "email": "ahmad.fauzi@muallimin.sch.id",
-    "nbm": "20240001",
-    "whatsapp_number": "081234567890",
-    "role": "GURU"
-  }
+    "status": "success",
+    "data": {
+        "id": 1,
+        "sso_id": "uuid-user-di-sso",
+        "name": "Ahmad Fauzi",
+        "email": "ahmad.fauzi@muallimin.sch.id",
+        "nbm": "20240001",
+        "whatsapp_number": "081234567890",
+        "role": "GURU"
+    }
 }
 ```
 
 **Response Gagal (401):**
+
 ```json
 { "message": "Unauthenticated." }
 ```
@@ -395,16 +398,18 @@ Authorization: Bearer {access_token}
 Backend CSR tidak menyimpan session atau refresh token — sehingga tidak ada state yang perlu dihapus. Invalidasi token yang sesungguhnya terjadi di SSO Server dan dilakukan langsung oleh frontend (bukan melalui backend).
 
 **Request:**
+
 ```http
 POST /api/auth/logout
 Authorization: Bearer {access_token}
 ```
 
 **Response Sukses (200):**
+
 ```json
 {
-  "status": "success",
-  "message": "Logged out successfully"
+    "status": "success",
+    "message": "Logged out successfully"
 }
 ```
 
@@ -415,6 +420,7 @@ Authorization: Bearer {access_token}
 **Tujuan:** Daftar pengguna di database lokal dengan statistik dan paginasi.
 
 **Request:**
+
 ```http
 GET /api/users?per_page=20
 Authorization: Bearer {access_token}
@@ -422,45 +428,46 @@ Authorization: Bearer {access_token}
 
 **Query Parameters:**
 
-| Parameter | Default | Nilai Valid |
-| :--- | :--- | :--- |
-| `per_page` | `10` | `10`, `20`, `60`, `80`, `100` |
+| Parameter  | Default | Nilai Valid                   |
+| :--------- | :------ | :---------------------------- |
+| `per_page` | `10`    | `10`, `20`, `60`, `80`, `100` |
 
 **Response Sukses (200):**
+
 ```json
 {
-  "status": "success",
-  "stats": {
-    "total": 150,
-    "synced": 148,
-    "no_role": 3
-  },
-  "users": {
-    "current_page": 1,
-    "data": [
-      {
-        "id": 1,
-        "name": "Ahmad Fauzi",
-        "email": "ahmad.fauzi@muallimin.sch.id",
-        "role": "GURU",
-        "nbm": "20240001",
-        "whatsapp_number": "081234567890"
-      }
-    ],
-    "last_page": 8,
-    "per_page": 20,
-    "total": 150
-  }
+    "status": "success",
+    "stats": {
+        "total": 150,
+        "synced": 148,
+        "no_role": 3
+    },
+    "users": {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 1,
+                "name": "Ahmad Fauzi",
+                "email": "ahmad.fauzi@muallimin.sch.id",
+                "role": "GURU",
+                "nbm": "20240001",
+                "whatsapp_number": "081234567890"
+            }
+        ],
+        "last_page": 8,
+        "per_page": 20,
+        "total": 150
+    }
 }
 ```
 
 **Keterangan `stats`:**
 
-| Field | Keterangan |
-| :--- | :--- |
-| `total` | Total pengguna di DB lokal |
-| `synced` | Pengguna yang memiliki `sso_id` (sudah ter-link ke akun SSO) |
-| `no_role` | Pengguna dengan kolom `role = null` |
+| Field     | Keterangan                                                   |
+| :-------- | :----------------------------------------------------------- |
+| `total`   | Total pengguna di DB lokal                                   |
+| `synced`  | Pengguna yang memiliki `sso_id` (sudah ter-link ke akun SSO) |
+| `no_role` | Pengguna dengan kolom `role = null`                          |
 
 ---
 
@@ -469,25 +476,29 @@ Authorization: Bearer {access_token}
 **Tujuan:** Sinkronisasi massal seluruh pengguna dari SSO Server ke database lokal.
 
 **Request:**
+
 ```http
 POST /api/users/sync
 Authorization: Bearer {access_token}
 ```
 
 **Response Sukses (200):**
+
 ```json
 {
-  "status": "success",
-  "message": "Sinkronisasi berhasil! 285 pengguna telah diselaraskan."
+    "status": "success",
+    "message": "Sinkronisasi berhasil! 285 pengguna telah diselaraskan."
 }
 ```
 
 **Response Gagal — SSO tidak merespons (400):**
+
 ```json
 { "message": "Gagal sinkronisasi: Respon API SSO tidak sukses." }
 ```
 
 **Response Gagal — Exception tak terduga (500):**
+
 ```json
 { "message": "Gagal melakukan sinkronisasi: {detail error}" }
 ```
@@ -498,16 +509,16 @@ Authorization: Bearer {access_token}
 
 File: [`app/Models/User.php`](app/Models/User.php)
 
-| Kolom | Tipe | Nullable | Unique | Keterangan |
-| :--- | :--- | :--- | :--- | :--- |
-| `id` | bigint | Tidak | Ya | Primary key lokal |
-| `sso_id` | uuid | Ya | Ya | ID unik dari SSO Server (`userId` dari JWT/userinfo) — penghubung antara akun SSO dan akun lokal |
-| `name` | string | Tidak | Tidak | Nama lengkap |
-| `email` | string | Tidak | Ya | Email — kunci fallback saat user belum punya `sso_id` |
-| `nbm` | string(20) | Ya | Tidak | Nomor Buku Murid |
-| `whatsapp_number` | string(20) | Ya | Tidak | Nomor WhatsApp |
-| `role` | string(50) | Ya | Tidak | Peran: `GURU`, `SISWA`, `ADMIN`, dll — diambil dari JWT payload |
-| `password` | string | Ya | Tidak | Tidak digunakan untuk SSO login. Ada karena `Authenticatable` memerlukan kolom ini |
+| Kolom             | Tipe       | Nullable | Unique | Keterangan                                                                                       |
+| :---------------- | :--------- | :------- | :----- | :----------------------------------------------------------------------------------------------- |
+| `id`              | bigint     | Tidak    | Ya     | Primary key lokal                                                                                |
+| `sso_id`          | uuid       | Ya       | Ya     | ID unik dari SSO Server (`userId` dari JWT/userinfo) — penghubung antara akun SSO dan akun lokal |
+| `name`            | string     | Tidak    | Tidak  | Nama lengkap                                                                                     |
+| `email`           | string     | Tidak    | Ya     | Email — kunci fallback saat user belum punya `sso_id`                                            |
+| `nbm`             | string(20) | Ya       | Tidak  | Nomor Buku Murid                                                                                 |
+| `whatsapp_number` | string(20) | Ya       | Tidak  | Nomor WhatsApp                                                                                   |
+| `role`            | string(50) | Ya       | Tidak  | Peran: `GURU`, `SISWA`, `ADMIN`, dll — diambil dari JWT payload                                  |
+| `password`        | string     | Ya       | Tidak  | Tidak digunakan untuk SSO login. Ada karena `Authenticatable` memerlukan kolom ini               |
 
 ---
 
